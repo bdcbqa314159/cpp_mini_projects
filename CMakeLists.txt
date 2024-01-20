@@ -11,5 +11,5 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # set(EXE_CH_1_ACT_1 ch_1_act_1)
 # set(EXE_CH_1_ACT_2 ch_1_act_2)
 
-add_subdirectory(exercises_activities_chapter_1)
+add_subdirectory(blood_bank_management_system)
 
