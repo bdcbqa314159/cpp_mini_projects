@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <set>
 
 const char nl = '\n';
 struct Person
@@ -58,8 +59,58 @@ void example_for_data_bin()
     std::cout << "success?" << nl << other << nl;
 }
 
+class ABO
+{
+public:
+    ABO() = default;
+    ABO(const std::string &group) : abo_group(group) {}
+
+    ABO(const ABO &other) : abo_group(other.abo_group) {}
+
+    ABO &operator=(const ABO &other)
+    {
+        if (this != &other)
+            abo_group = other.abo_group;
+        else
+            return *this;
+    }
+
+    friend std::ostream &operator<<(std::ostream &, const ABO &);
+
+private:
+    std::string abo_group{};
+};
+
+bool check_group(const std::string &input)
+{
+    const std::set<std::string> groups = {"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"};
+    return groups.find(input) != groups.end();
+}
+
 int main()
 {
+    std::string name{};
+
+    int i = 0;
+    while (i < 10)
+    {
+
+        std::cout << "type>>> ";
+        std::getline(std::cin, name);
+
+        if (check_group(name))
+            std::cout << "you entered a valid type" << nl;
+        else
+            std::cout << "invalid type" << nl;
+        name = "";
+        i++;
+    }
 
     return 0;
+}
+
+std::ostream &operator<<(std::ostream &os, const ABO &group)
+{
+    os << group.abo_group;
+    return os;
 }
