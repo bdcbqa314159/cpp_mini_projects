@@ -87,7 +87,24 @@ bool check_group(const std::string &input)
     return groups.find(input) != groups.end();
 }
 
-int main()
+class Menu
+{
+
+public:
+    void display()
+    {
+        std::cout << nl << "Menu:" << nl;
+        std::cout << "1. Add donor" << nl;
+        std::cout << "2. Update donor" << nl;
+        std::cout << "3. Add hospital" << nl;
+        std::cout << "4. Donate" << nl;
+        std::cout << "5. Request blood" << nl;
+        std::cout << "6. Display available blood packets" << nl;
+        std::cout << "7. Exit" << nl;
+    }
+};
+
+void test_blood_group()
 {
     std::string name{};
 
@@ -105,6 +122,13 @@ int main()
         name = "";
         i++;
     }
+}
+
+int main()
+{
+    Menu myMenu{};
+
+    myMenu.display();
 
     return 0;
 }
