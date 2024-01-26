@@ -1,8 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include <set>
+#include <map>
+#include <vector>
 
 const char nl = '\n';
+
+std::ostream &operator<<(std::ostream &, const std::map<size_t, std::string> &);
+
 struct Person
 {
     std::string name{};
@@ -71,8 +76,8 @@ public:
     {
         if (this != &other)
             abo_group = other.abo_group;
-        else
-            return *this;
+
+        return *this;
     }
 
     friend std::ostream &operator<<(std::ostream &, const ABO &);
@@ -81,27 +86,65 @@ private:
     std::string abo_group{};
 };
 
+class Checker
+{
+private:
+    std::set<std::string> data{};
+
+public:
+    Checker() = default;
+    Checker(const std::set<std::string> &other_data) : data(other_data) {}
+    // Checker(const std::set<std::string> &&other_data) : data(other_data) {}
+
+    bool operator()(const std::string &input)
+    {
+        return data.find(input) != data.end();
+    }
+};
+
 bool check_group(const std::string &input)
 {
     const std::set<std::string> groups = {"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"};
     return groups.find(input) != groups.end();
 }
 
+bool check_menu_choice(const std::string &input)
+{
+    const std::set<std::string> choice = {"1", "2", "3", "4", "5", "6", "7"};
+    return choice.find(input) != choice.end();
+}
+
+struct DataMenu
+{
+    std::map<size_t, std::string> data{};
+
+    std::map<size_t, std::string> operator()()
+    {
+        std::vector<std::string> choices = {
+            "Add donor",
+            "Update donor",
+            "Add hospital",
+            "Donate",
+            "Request blood",
+            "Display available blood packets",
+            "Exit",
+        };
+        std::map<size_t, std::string> map{};
+        for (size_t i = 0; i < choices.size(); i++)
+            map.insert(std::make_pair(i + 1, choices.at(i)));
+
+        return map;
+    }
+};
+
 class Menu
 {
+private:
+    std::map<size_t, std::string> data{};
 
 public:
-    void display()
-    {
-        std::cout << nl << "Menu:" << nl;
-        std::cout << "1. Add donor" << nl;
-        std::cout << "2. Update donor" << nl;
-        std::cout << "3. Add hospital" << nl;
-        std::cout << "4. Donate" << nl;
-        std::cout << "5. Request blood" << nl;
-        std::cout << "6. Display available blood packets" << nl;
-        std::cout << "7. Exit" << nl;
-    }
+    Menu() : data(DataMenu()()) {}
+    friend std::ostream &operator<<(std::ostream &, const Menu &);
 };
 
 void test_blood_group()
@@ -126,9 +169,39 @@ void test_blood_group()
 
 int main()
 {
-    Menu myMenu{};
+    Menu menu{};
+    Checker check_menu({"1", "2", "3", "4", "5", "6", "7"});
+    Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
+    std::string choice{};
 
-    myMenu.display();
+    while (true)
+    {
+        std::cout << menu << nl;
+        std::cout << "Please enter a valid choice  >> ";
+        std::getline(std::cin, choice);
+
+        if (check_menu(choice))
+        {
+            if (choice == "7")
+            {
+                std::cout << "Many thanks and bye" << nl;
+                std::cout << "press a key to quit" << nl;
+                break;
+            }
+
+            else
+            {
+                std::cout << "you choose " << choice << nl;
+            }
+        }
+        else
+        {
+            std::cout << "Sorry the input is invalid" << nl;
+        }
+        std::cout << "press a key to continue" << nl;
+        std::getc(stdin);
+        std::system("clear");
+    }
 
     return 0;
 }
@@ -136,5 +209,18 @@ int main()
 std::ostream &operator<<(std::ostream &os, const ABO &group)
 {
     os << group.abo_group;
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &map)
+{
+    for (auto it = map.begin(); it != map.end(); it++)
+        os << it->first << " " << it->second << nl;
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const Menu &menu)
+{
+    os << menu.data;
     return os;
 }
