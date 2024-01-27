@@ -79,7 +79,6 @@ public:
     ABO() = default;
     ABO(const std::string &group) : abo_group(group) {}
     ABO(const std::string &&group) : abo_group(group) {}
-    // ABO(const ABO &other) : abo_group(other.abo_group) {}
 
     ABO &operator=(const ABO &other)
     {
