@@ -5,39 +5,69 @@
 #include <vector>
 
 const char nl = '\n';
+const std::vector<std::string> choices = {
+    "Add donor",
+    "Update donor",
+    "Add hospital",
+    "Donate",
+    "Request blood",
+    "Display available blood packets",
+    "Exit",
+};
+
+const std::vector<std::string> choices_donor = {
+    "Update name",
+    "Update contact",
+    "Update fitness status",
+    "Exit",
+};
 
 std::ostream &operator<<(std::ostream &, const std::map<size_t, std::string> &);
 
 template <class T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
 {
-    os << "[";
     for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
     {
-        os << " " << *ii;
+        os << *ii << " ";
     }
-    os << "]";
+
     return os;
 }
 
 template <class T>
 std::istream &operator>>(std::istream &is, std::vector<T> &v)
 {
-    for (auto &element : v)
-        is >> element;
+    T element{};
+    while (is >> element)
+    {
+        v.push_back(element);
+    }
 
     return is;
+}
+
+void donors_database()
+{
+
+    std::cout << "Playing with donors" << nl;
+    return;
 }
 
 class Person
 {
 protected:
     std::string name{};
-    double height{};
 
 public:
     Person() = default;
-    Person(const std::string &other_name, double other_height) : name(other_name), height(other_height) {}
+    Person(const std::string &other_name) : name(other_name) {}
+
+    void set_name(const std::string &other_name)
+    {
+        name = other_name;
+        return;
+    }
 
     friend std::ostream &operator<<(std::ostream &, const Person &);
     friend std::istream &operator>>(std::istream &is, Person &);
@@ -101,9 +131,12 @@ public:
 class Donors
 {
 private:
-    std::vector<Donor> data{std::vector<Donor>(10)};
+    std::vector<Donor> data{};
 
 public:
+    Donors() = default;
+    Donors(const std::vector<Donor> &other_data) : data(other_data) {}
+
     void add(const Donor &donor)
     {
         data.push_back(donor);
@@ -117,9 +150,9 @@ public:
 void example_for_data_bin()
 {
 
-    Person me = {"Bernardo", 1.62};
-    Person you = {"Alexia", 1.65};
-    Person her = {"Delphine", 1.8};
+    Person me = {"Bernardo"};
+    Person you = {"Alexia"};
+    Person her = {"Delphine"};
     std::cout << me << nl;
 
     std::vector<Person> all = {me, you, her};
@@ -181,6 +214,64 @@ void example_for_data_bin()
     }
 }
 
+void example_for_data_donors()
+{
+
+    Person me = {"Bernardo"};
+    Person you = {"Alexia"};
+    Person her = {"Delphine"};
+
+    std::vector<Donor> all_1 = {me, you, her};
+
+    for (auto &person : all_1)
+    {
+        person.set_contact("someone");
+        person.set_fit(true);
+        person.set_abo({"O+"});
+    }
+
+    std::cout << all_1 << nl;
+
+    std::string filename = "test_person";
+    std::ofstream output_file{};
+
+    output_file.open(filename);
+
+    if (output_file.is_open())
+    {
+        output_file << all_1;
+        output_file.close();
+    }
+
+    else
+    {
+        std::cout << "could not open the file" << nl;
+        std::abort();
+    }
+
+    Donors other{};
+
+    std::ifstream input_file{};
+
+    // std::vector<Donor> test{};
+
+    input_file.open(filename);
+
+    if (input_file.is_open())
+    {
+        input_file >> other;
+        input_file.close();
+        std::cout << "end of file: " << nl;
+        std::cout << other << nl;
+    }
+
+    else
+    {
+        std::cout << "could not read the file" << nl;
+        std::abort();
+    }
+}
+
 class Checker
 {
 private:
@@ -190,7 +281,13 @@ public:
     Checker() = default;
     Checker(const std::set<std::string> &other_data) : data(other_data) {}
 
-    bool operator()(const std::string &input)
+    void set_data(const std::set<std::string> &other_data)
+    {
+        data = other_data;
+        return;
+    }
+
+    bool operator()(const std::string &input) const
     {
         return data.find(input) != data.end();
     }
@@ -198,102 +295,111 @@ public:
 
 struct DataMenu
 {
-    std::map<size_t, std::string> data{};
-    std::map<size_t, std::string> operator()();
+    std::map<std::string, std::string> data{};
+    std::map<std::string, std::string> operator()(const std::vector<std::string> &);
 };
 
 class Menu
 {
 private:
-    std::map<size_t, std::string> data{};
+    std::map<std::string, std::string> data{};
+    Checker myChecker{};
 
 public:
-    Menu() : data(DataMenu()()) {}
+    Menu() = default;
+    Menu(const std::vector<std::string> &choice_data) : data(DataMenu()(choice_data))
+    {
+        std::set<std::string> myset{};
+        for (size_t i = 1; i <= choice_data.size(); ++i)
+            myset.insert(std::to_string(i));
+        myChecker.set_data(myset);
+    }
+
+    bool check(const std::string &input)
+    {
+        return myChecker(input);
+    }
+
+    std::string operator()(const std::string &input)
+    {
+        return data[input];
+    }
+
     friend std::ostream &operator<<(std::ostream &, const Menu &);
 };
 
-// void test_blood_group()
-// {
-//     std::string name{};
+void menu_interface(Menu &myMenu)
+{
+    std::string choice{}, blank{};
+    std::cout << myMenu << nl;
 
-//     int i = 0;
-//     while (i < 10)
-//     {
+    while (true)
+    {
+        std::cout << "Please enter a valid choice  >> ";
+        std::getline(std::cin, choice);
 
-//         std::cout << "type>>> ";
-//         std::getline(std::cin, name);
+        if (myMenu.check(choice))
+        {
+            if (myMenu(choice) == "Exit")
+            {
+                std::cout << "Many thanks and bye" << nl;
+                std::cout << "press a key to quit" << nl;
+                break;
+            }
 
-//         if (check_group(name))
-//             std::cout << "you entered a valid type" << nl;
-//         else
-//             std::cout << "invalid type" << nl;
-//         name = "";
-//         i++;
-//     }
-// }
+            else
+            {
+                std::cout << "you choose " << choice << nl;
+                std::cout << myMenu(choice) << std::endl;
+                // listener on myMenu
+            }
+        }
+        else
+        {
+            std::cout << "Sorry the input is invalid" << nl;
+        }
+        std::cout << "press a key to continue" << nl;
+        std::getline(std::cin, blank);
+        std::system("clear");
+        std::cout << myMenu << nl;
+    }
+}
 
 int main()
 {
-    Menu menu{};
-    Checker check_menu({"1", "2", "3", "4", "5", "6", "7"});
+    Menu menu(choices);
+    Menu menu_donor(choices_donor);
     Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
-    std::string choice{}, blank{};
 
-    // while (true)
-    // {
-    //     std::cout << menu << nl;
-    //     std::cout << "Please enter a valid choice  >> ";
-    //     std::getline(std::cin, choice);
+    menu_interface(menu);
 
-    //     if (check_menu(choice))
-    //     {
-    //         if (choice == "7")
-    //         {
-    //             std::cout << "Many thanks and bye" << nl;
-    //             std::cout << "press a key to quit" << nl;
-    //             break;
-    //         }
-
-    //         else
-    //         {
-    //             std::cout << "you choose " << choice << nl;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         std::cout << "Sorry the input is invalid" << nl;
-    //     }
-    //     std::cout << "press a key to continue" << nl;
-    //     std::getline(std::cin, blank);
-    //     std::system("clear");
-    // }
-
-    example_for_data_bin();
+    // example_for_data_bin();
+    // example_for_data_donors();
 
     return 0;
 }
 
 std::ostream &operator<<(std::ostream &os, const Person &person)
 {
-    os << person.name << " " << person.height;
+    os << person.name;
     return os;
 }
 
 std::istream &operator>>(std::istream &is, Person &person)
 {
-    is >> person.name >> person.height;
+    is >> person.name;
     return is;
 }
 
 std::ostream &operator<<(std::ostream &os, const Donor &donor)
 {
-    os << donor.name << " " << donor.height << " " << donor.contact << " " << donor.fit << " " << donor.abo;
+    os << donor.name << " " << donor.contact << " " << donor.fit << " " << donor.abo;
     return os;
 }
 
 std::istream &operator>>(std::istream &is, Donor &donor)
 {
-    is >> donor.name >> donor.height >> donor.contact >> donor.fit >> donor.abo;
+    is >> donor.name >> donor.contact >> donor.fit >> donor.abo;
     return is;
 }
 
@@ -309,7 +415,7 @@ std::istream &operator>>(std::istream &is, ABO &group)
     return is;
 }
 
-std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &map)
+std::ostream &operator<<(std::ostream &os, const std::map<std::string, std::string> &map)
 {
     for (auto it = map.begin(); it != map.end(); it++)
         os << it->first << " " << it->second << nl;
@@ -334,20 +440,12 @@ std::istream &operator>>(std::istream &is, Donors &donors)
     return is;
 }
 
-std::map<size_t, std::string> DataMenu::operator()()
+std::map<std::string, std::string> DataMenu::operator()(const std::vector<std::string> &choices)
 {
-    std::vector<std::string> choices = {
-        "Add donor",
-        "Update donor",
-        "Add hospital",
-        "Donate",
-        "Request blood",
-        "Display available blood packets",
-        "Exit",
-    };
-    std::map<size_t, std::string> map{};
+
+    std::map<std::string, std::string> map{};
     for (size_t i = 0; i < choices.size(); i++)
-        map.insert(std::make_pair(i + 1, choices.at(i)));
+        map.insert(std::make_pair(std::to_string(i + 1), choices.at(i)));
 
     return map;
 }
