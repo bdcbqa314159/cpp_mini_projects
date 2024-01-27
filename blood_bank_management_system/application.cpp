@@ -5,6 +5,8 @@
 #include <vector>
 
 const char nl = '\n';
+void adding_donor();
+void update_donor();
 const std::vector<std::string> choices = {
     "Add donor",
     "Update donor",
@@ -29,7 +31,7 @@ std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
 {
     for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
     {
-        os << *ii << " ";
+        os << *ii << nl;
     }
 
     return os;
@@ -45,13 +47,6 @@ std::istream &operator>>(std::istream &is, std::vector<T> &v)
     }
 
     return is;
-}
-
-void donors_database()
-{
-
-    std::cout << "Playing with donors" << nl;
-    return;
 }
 
 class Person
@@ -247,28 +242,6 @@ void example_for_data_donors()
         std::cout << "could not open the file" << nl;
         std::abort();
     }
-
-    Donors other{};
-
-    std::ifstream input_file{};
-
-    // std::vector<Donor> test{};
-
-    input_file.open(filename);
-
-    if (input_file.is_open())
-    {
-        input_file >> other;
-        input_file.close();
-        std::cout << "end of file: " << nl;
-        std::cout << other << nl;
-    }
-
-    else
-    {
-        std::cout << "could not read the file" << nl;
-        std::abort();
-    }
 }
 
 class Checker
@@ -350,7 +323,10 @@ void menu_interface(Menu &myMenu)
             {
                 std::cout << "you choose " << choice << nl;
                 std::cout << myMenu(choice) << std::endl;
-                // listener on myMenu
+                if (myMenu(choice) == "Add donor")
+                    adding_donor();
+                else if (myMenu(choice) == "Update donor")
+                    update_donor();
             }
         }
         else
@@ -364,16 +340,179 @@ void menu_interface(Menu &myMenu)
     }
 }
 
+void adding_name(Donor &donor)
+{
+    std::string input{};
+
+    std::cout << "Give name >> ";
+    std::getline(std::cin, input);
+    donor.set_name(input);
+    return;
+}
+
+void adding_contact(Donor &donor)
+{
+
+    std::string input{};
+    std::cout << "Give contact >> ";
+    std::getline(std::cin, input);
+    donor.set_contact(input);
+    return;
+}
+
+void adding_fitness(Donor &donor)
+{
+    std::string input{}, blank{};
+
+    while (true)
+    {
+        std::cout << "Give fit - 0 or 1 >> ";
+        std::getline(std::cin, input);
+
+        if (input == "0")
+        {
+            donor.set_fit(false);
+            break;
+        }
+
+        else if (input == "1")
+        {
+            donor.set_fit(true);
+            break;
+        }
+
+        else
+        {
+            std::cout << "Sorry the input is invalid" << nl;
+        }
+        std::cout << "press a key to continue" << nl;
+        std::getline(std::cin, blank);
+        std::system("clear");
+    }
+    return;
+}
+
+void adding_abo(Donor &donor)
+{
+    std::string input{}, blank{};
+
+    Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
+    while (true)
+    {
+        std::cout << "Give blood group >> ";
+        std::getline(std::cin, input);
+
+        if (check_blood(input))
+        {
+            donor.set_abo(input);
+            break;
+        }
+
+        else
+        {
+            std::cout << "Sorry the input is invalid" << nl;
+        }
+        std::cout << "press a key to continue" << nl;
+        std::getline(std::cin, blank);
+        std::system("clear");
+    }
+
+    return;
+}
+
+Donor building_donor()
+{
+
+    Donor output{};
+
+    adding_name(output);
+    adding_contact(output);
+    adding_fitness(output);
+    adding_abo(output);
+
+    return output;
+}
+
+void adding_donor()
+{
+
+    const std::string file_name = "donors_db";
+
+    Donor current_donor = building_donor();
+
+    std::ofstream output_file{};
+
+    output_file.open(file_name, std::ios_base::app);
+
+    if (output_file.is_open())
+    {
+        output_file << current_donor << nl;
+        output_file.close();
+        std::cout << "**************************" << nl;
+        std::cout << current_donor << nl;
+        std::cout << "Added into " << file_name << " database" << nl;
+        std::cout << "**************************" << nl;
+    }
+
+    else
+    {
+        std::cout << "could not open the file" << nl;
+        std::abort();
+    }
+
+    // std::ifstream input_file{};
+    // // , std::ios_base::app
+    // input_file.open(file_name);
+
+    // if (input_file.is_open())
+    // {
+    //     input_file >> other;
+    //     input_file.close();
+    //     std::cout << "end of file: " << nl;
+    //     std::cout << other << nl;
+    // }
+
+    // else
+    // {
+    //     std::cout << "could not read the file" << nl;
+    //     std::abort();
+    // }
+
+    return;
+}
+
+void update_donor()
+{
+    Donors total_donors_db{};
+    const std::string file_name = "donors_db";
+
+    std::ifstream input_file{};
+
+    input_file.open(file_name);
+
+    if (input_file.is_open())
+    {
+        input_file >> total_donors_db;
+        input_file.close();
+
+        std::cout << "the list of donors is " << nl;
+        std::cout << total_donors_db << nl;
+    }
+
+    else
+    {
+        std::cout << "could not read the file" << nl;
+        std::abort();
+    }
+}
+
 int main()
 {
     Menu menu(choices);
     Menu menu_donor(choices_donor);
-    Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
+    // Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
 
     menu_interface(menu);
-
-    // example_for_data_bin();
-    // example_for_data_donors();
 
     return 0;
 }
