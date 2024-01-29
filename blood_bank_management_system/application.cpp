@@ -7,6 +7,8 @@
 const char nl = '\n';
 void adding_donor();
 void update_donor();
+void donate();
+
 const std::vector<std::string> choices = {
     "Add donor",
     "Update donor",
@@ -25,6 +27,8 @@ const std::vector<std::string> choices_donor = {
 };
 
 std::ostream &operator<<(std::ostream &, const std::map<size_t, std::string> &);
+
+std::ostream &operator<<(std::ostream &, const std::map<std::string, std::vector<int>> &);
 
 template <class T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
@@ -118,6 +122,11 @@ public:
         return;
     }
 
+    bool get_fit()
+    {
+        return fit;
+    }
+
     friend std::ostream &operator<<(std::ostream &, const Donor &);
     friend std::istream &operator>>(std::istream &is, Donor &);
 };
@@ -137,112 +146,14 @@ public:
         return;
     }
 
+    Donor &operator[](size_t index) { return data.at(index); }
+    Donor operator[](size_t index) const { return data.at(index); }
+
+    size_t size() { return data.size(); }
+
     friend std::ostream &operator<<(std::ostream &, const Donors &);
     friend std::istream &operator>>(std::istream &is, Donors &);
 };
-
-void example_for_data_bin()
-{
-
-    Person me = {"Bernardo"};
-    Person you = {"Alexia"};
-    Person her = {"Delphine"};
-    std::cout << me << nl;
-
-    std::vector<Person> all = {me, you, her};
-
-    std::vector<Donor> all_1 = {me, you, her};
-
-    for (auto &person : all_1)
-    {
-        person.set_contact("someone");
-        person.set_fit(true);
-        person.set_abo({"O+"});
-    }
-
-    // for (auto person : all_1)
-    //     std::cout << person << nl;
-
-    std::string filename = "test_person";
-    std::ofstream output_file{};
-
-    output_file.open(filename);
-
-    if (output_file.is_open())
-    {
-        for (auto person : all_1)
-            output_file << person << nl;
-        output_file.close();
-    }
-
-    else
-    {
-        std::cout << "could not open the file" << nl;
-        std::abort();
-    }
-
-    Donor other{};
-
-    std::ifstream input_file{};
-
-    std::vector<Donor> test{};
-
-    input_file.open(filename);
-
-    if (input_file.is_open())
-    {
-        while (input_file >> other)
-        {
-            test.push_back(other);
-        }
-        input_file.close();
-        std::cout << "end of file: " << nl;
-        for (auto person : test)
-            std::cout << person << nl;
-    }
-
-    else
-    {
-        std::cout << "could not read the file" << nl;
-        std::abort();
-    }
-}
-
-void example_for_data_donors()
-{
-
-    Person me = {"Bernardo"};
-    Person you = {"Alexia"};
-    Person her = {"Delphine"};
-
-    std::vector<Donor> all_1 = {me, you, her};
-
-    for (auto &person : all_1)
-    {
-        person.set_contact("someone");
-        person.set_fit(true);
-        person.set_abo({"O+"});
-    }
-
-    std::cout << all_1 << nl;
-
-    std::string filename = "test_person";
-    std::ofstream output_file{};
-
-    output_file.open(filename);
-
-    if (output_file.is_open())
-    {
-        output_file << all_1;
-        output_file.close();
-    }
-
-    else
-    {
-        std::cout << "could not open the file" << nl;
-        std::abort();
-    }
-}
 
 class Checker
 {
@@ -300,6 +211,33 @@ public:
     friend std::ostream &operator<<(std::ostream &, const Menu &);
 };
 
+class BloodStock
+{
+private:
+    std::map<std::string, std::vector<int>> blood_stock{};
+
+public:
+    BloodStock()
+    {
+        std::set<std::string> types = {
+            "AB+",
+            "AB-",
+            "O+",
+            "O-",
+            "A+",
+            "A-",
+            "B+",
+            "B-"};
+
+        for (auto type : types)
+        {
+            blood_stock.insert(std::pair<std::string, std::vector<int>>(type, {}));
+        }
+    }
+
+    friend std::ostream &operator<<(std::ostream &, const BloodStock &);
+};
+
 void menu_interface(Menu &myMenu)
 {
     std::string choice{}, blank{};
@@ -316,6 +254,8 @@ void menu_interface(Menu &myMenu)
             {
                 std::cout << "Many thanks and bye" << nl;
                 std::cout << "press a key to quit" << nl;
+                std::getline(std::cin, blank);
+
                 break;
             }
 
@@ -327,6 +267,8 @@ void menu_interface(Menu &myMenu)
                     adding_donor();
                 else if (myMenu(choice) == "Update donor")
                     update_donor();
+                else if (myMenu(choice) == "Donate")
+                    donate();
             }
         }
         else
@@ -338,6 +280,8 @@ void menu_interface(Menu &myMenu)
         std::system("clear");
         std::cout << myMenu << nl;
     }
+    std::system("clear");
+    return;
 }
 
 void adding_name(Donor &donor)
@@ -460,24 +404,6 @@ void adding_donor()
         std::abort();
     }
 
-    // std::ifstream input_file{};
-    // // , std::ios_base::app
-    // input_file.open(file_name);
-
-    // if (input_file.is_open())
-    // {
-    //     input_file >> other;
-    //     input_file.close();
-    //     std::cout << "end of file: " << nl;
-    //     std::cout << other << nl;
-    // }
-
-    // else
-    // {
-    //     std::cout << "could not read the file" << nl;
-    //     std::abort();
-    // }
-
     return;
 }
 
@@ -497,6 +423,153 @@ void update_donor()
 
         std::cout << "the list of donors is " << nl;
         std::cout << total_donors_db << nl;
+
+        while (true)
+        {
+            size_t input{};
+            std::string blank{};
+            std::cout << "Give a number >> ";
+            std::cin >> input;
+            size_t max_items = total_donors_db.size();
+            std::getline(std::cin, blank);
+            if (input >= 1 && input <= max_items)
+            {
+                Donor to_change = total_donors_db[input - 1];
+                std::cout << "this donor :" << nl;
+                std::cout << to_change << nl;
+                std::cout << "will be changed" << nl;
+
+                Donor current_donor = building_donor();
+                total_donors_db[input - 1] = current_donor;
+                std::cout << nl << nl;
+                std::cout << "After modification" << nl << total_donors_db << nl;
+
+                std::ofstream output_file{};
+                output_file.open(file_name);
+
+                if (output_file.is_open())
+                {
+                    output_file << total_donors_db;
+                    output_file.close();
+                    break;
+                }
+
+                else
+                {
+                    std::cout << "could not read the file" << nl;
+                    std::abort();
+                }
+            }
+            else
+            {
+                std::cout << "Sorry the input is invalid" << nl;
+            }
+            std::cout << "press a key to continue" << nl;
+            std::getline(std::cin, blank);
+            std::system("clear");
+        }
+        return;
+    }
+
+    else
+    {
+        std::cout << "could not read the file" << nl;
+        std::abort();
+    }
+}
+
+void donate()
+{
+    Donors total_donors_db{};
+    const std::string file_name = "donors_db";
+
+    std::ifstream input_file{};
+
+    input_file.open(file_name);
+
+    if (input_file.is_open())
+    {
+        input_file >> total_donors_db;
+        input_file.close();
+
+        std::cout << "the list of donors is " << nl;
+        std::cout << total_donors_db << nl;
+
+        while (true)
+        {
+            size_t input{};
+            std::string blank{};
+            std::cout << "Give a number (press 0 to quit)>> ";
+            std::cin >> input;
+            size_t max_items = total_donors_db.size();
+            std::getline(std::cin, blank);
+            if (input >= 1 && input <= max_items)
+            {
+                Donor donor = total_donors_db[input - 1];
+                std::cout << "this donor :" << nl;
+                std::cout << donor << nl;
+                std::cout << "will donate to the blood bank" << nl;
+
+                while (true)
+                {
+                    std::string input{};
+                    std::string blank{};
+                    std::cout << "Proceed ? Y/N >> ";
+                    std::cin >> input;
+
+                    if (input == "Y" || input == "N")
+                    {
+                        if (input == "Y")
+                        {
+                            std::cout << "Donor: " << nl << donor << nl << " gave the blood" << nl;
+                            std::getline(std::cin, blank);
+
+                            if (donor.get_fit())
+                            {
+                                std::cout << donor << " in good shape" << nl;
+                            }
+
+                            else
+                            {
+                                std::cout << donor << " can not donate" << nl;
+                                std::getline(std::cin, blank);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            std::cout << "Ok we quit this" << nl;
+                            std::getline(std::cin, blank);
+                            break;
+                        }
+                    }
+
+                    else
+                    {
+                        std::cout << "Sorry the input is invalid" << nl;
+                        std::getline(std::cin, blank);
+                    }
+                    std::cout << "press a key to continue" << nl;
+                    std::getline(std::cin, blank);
+                    std::system("clear");
+                }
+            }
+
+            else if (input == 0)
+            {
+                std::cout << "Ah ok - we quit" << nl;
+                break;
+            }
+
+            else
+            {
+                std::cout << "Sorry the input is invalid" << nl;
+            }
+            std::cout << "press a key to continue" << nl;
+            std::getline(std::cin, blank);
+            std::system("clear");
+        }
+        return;
     }
 
     else
@@ -560,6 +633,13 @@ std::ostream &operator<<(std::ostream &os, const std::map<std::string, std::stri
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const std::map<std::string, std::vector<int>> &map)
+{
+    for (auto it = map.begin(); it != map.end(); it++)
+        os << it->first << " " << it->second << nl;
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const Menu &menu)
 {
     os << menu.data;
@@ -586,4 +666,10 @@ std::map<std::string, std::string> DataMenu::operator()(const std::vector<std::s
         map.insert(std::make_pair(std::to_string(i + 1), choices.at(i)));
 
     return map;
+}
+
+std::ostream &operator<<(std::ostream &os, const BloodStock &object)
+{
+    os << object.blood_stock;
+    return os;
 }

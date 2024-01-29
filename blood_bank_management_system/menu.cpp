@@ -46,27 +46,27 @@ public:
 
 Menu menuLoader(const std::string &filename);
 
-int main()
-{
+// int main()
+// {
 
-    std::cout << "Hey" << nl;
+//     std::cout << "Hey" << nl;
 
-    Menu myMenu;
+//     Menu myMenu;
 
-    myMenu.add("Add option");
-    myMenu.add("Save status");
-    myMenu.add("Quit");
-    std::cout << myMenu << nl;
+//     myMenu.add("Add option");
+//     myMenu.add("Save status");
+//     myMenu.add("Quit");
+//     std::cout << myMenu << nl;
 
-    std::string filename = "my_menu_blood_bank";
-    myMenu.save(filename);
+//     std::string filename = "my_menu_blood_bank";
+//     myMenu.save(filename);
 
-    Menu output = menuLoader(filename);
+//     Menu output = menuLoader(filename);
 
-    std::cout << output.data.size() << nl;
+//     std::cout << output.data.size() << nl;
 
-    return 0;
-}
+//     return 0;
+// }
 
 std::ostream &operator<<(std::ostream &os, const Menu &menu)
 {
@@ -121,4 +121,17 @@ Menu menuLoader(const std::string &filename)
     }
 
     return output;
+}
+
+int main()
+{
+
+    size_t in{};
+
+    std::cout << "test >>> ";
+    std::cin >> in;
+
+    std::cout << in << " " << nl;
+
+    return 0;
 }
