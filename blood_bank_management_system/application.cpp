@@ -28,6 +28,7 @@ const std::vector<std::string> choices_donor = {
 };
 
 std::ostream &operator<<(std::ostream &, const std::map<size_t, std::string> &);
+
 template <class T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
 {
@@ -156,6 +157,11 @@ public:
         return *this;
     }
 
+    std::string get_string() const
+    {
+        return abo_group;
+    }
+
     friend std::ostream &operator<<(std::ostream &, const ABO &);
     friend std::istream &operator>>(std::istream &, ABO &);
 
@@ -173,6 +179,7 @@ private:
 public:
     Donor() = default;
     Donor(const Person &other) : Person(other), contact{}, fit{}, abo{} {}
+
     void set_contact(const std::string &other_contact)
     {
         contact = other_contact;
@@ -183,6 +190,11 @@ public:
     {
         fit = other_fit;
         return;
+    }
+
+    ABO get_abo() const
+    {
+        return abo;
     }
 
     void set_abo(const ABO &other_abo)
@@ -576,17 +588,20 @@ void donate()
         input_file >> total_donors_db;
         input_file.close();
 
-        std::cout << "the list of donors is " << nl;
-        std::cout << total_donors_db << nl;
-
         while (true)
         {
             size_t input{};
             std::string blank{};
-            std::cout << "Give a number (press 0 to quit)>> ";
-            std::cin >> input;
             size_t max_items = total_donors_db.size();
+            std::cout << "The list of donors is " << nl;
+            std::cout << "*****************************" << nl;
+            std::cout << total_donors_db << nl;
+            std::cout << "*****************************" << nl;
+            std::cout << "Give a number (press 0 to quit), limit: " << max_items << " >> ";
+            std::cin >> input;
+
             std::getline(std::cin, blank);
+
             if (input >= 1 && input <= max_items)
             {
                 Donor donor = total_donors_db[input - 1];
@@ -594,38 +609,18 @@ void donate()
                 std::cout << donor << nl;
                 std::cout << "will donate to the blood bank" << nl;
 
+                bool donate = false;
+                std::string input{};
                 while (true)
                 {
-                    std::string input{};
                     std::string blank{};
                     std::cout << "Proceed ? Y/N >> ";
                     std::cin >> input;
 
                     if (input == "Y" || input == "N")
                     {
-                        if (input == "Y")
-                        {
-                            std::cout << "Donor: " << nl << donor << nl << " gave the blood" << nl;
-                            std::getline(std::cin, blank);
-
-                            if (donor.get_fit())
-                            {
-                                std::cout << donor << " in good shape" << nl;
-                            }
-
-                            else
-                            {
-                                std::cout << donor << " can not donate" << nl;
-                                std::getline(std::cin, blank);
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            std::cout << "Ok we quit this" << nl;
-                            std::getline(std::cin, blank);
-                            break;
-                        }
+                        std::cout << "thanks you choose " << input << nl;
+                        break;
                     }
 
                     else
@@ -633,9 +628,103 @@ void donate()
                         std::cout << "Sorry the input is invalid" << nl;
                         std::getline(std::cin, blank);
                     }
+
                     std::cout << "press a key to continue" << nl;
                     std::getline(std::cin, blank);
                     std::system("clear");
+                }
+
+                if (input == "Y")
+                {
+                    std::cout << "Donor: " << nl << donor << nl << " gave the blood" << nl;
+                    std::getline(std::cin, blank);
+
+                    if (donor.get_fit())
+                    {
+                        std::cout << donor << " in good shape - then we donate" << nl;
+                        const std::string file_name = "blood_stock";
+                        BloodStock the_blood_stock{};
+                        std::ifstream input_file{};
+
+                        input_file.open(file_name);
+
+                        if (input_file.is_open())
+                        {
+                            input_file >> the_blood_stock;
+                            std::cout << "reconstruction:" << nl;
+                        }
+
+                        else
+                        {
+                            std::cout << "could not open the file" << nl;
+                            std::cout << "The bank is empty: " << nl;
+                        }
+                        input_file.close();
+
+                        std::cout << the_blood_stock << nl;
+
+                        int input{};
+
+                        while (true)
+                        {
+                            std::string blank{};
+                            std::cout << "Give time to expiry up to 12 (months) >> ";
+                            std::cin >> input;
+
+                            if (input >= 1 && input <= 12)
+                            {
+                                std::cout << "thanks press a key to continue" << nl;
+                                std::getline(std::cin, blank);
+                                break;
+                            }
+
+                            else
+                            {
+                                std::cout << "Sorry the input is invalid" << nl;
+                                std::getline(std::cin, blank);
+                            }
+
+                            std::cout << "press a key to continue" << nl;
+                            std::getline(std::cin, blank);
+                            std::system("clear");
+                        }
+
+                        the_blood_stock.add_expiry_donor(donor.get_abo().get_string(), input);
+
+                        std::ofstream output_file{};
+
+                        output_file.open(file_name);
+
+                        if (output_file.is_open())
+                        {
+                            output_file << the_blood_stock << nl;
+                            output_file.close();
+                            std::cout << "**************************" << nl;
+                            std::cout << "Added into " << file_name << " database" << nl;
+                            std::cout << "**************************" << nl;
+                        }
+
+                        else
+                        {
+                            std::cout << "could not open the file" << nl;
+                            std::abort();
+                        }
+                    }
+
+                    else
+                    {
+                        std::cout << donor << " can not donate" << nl;
+                        std::cout << "press a key to continue" << nl;
+                        std::getline(std::cin, blank);
+                        std::system("clear");
+                    }
+                }
+
+                else
+                {
+                    std::cout << "Ok we quit this" << nl;
+                    std::getline(std::cin, blank);
+                    break;
                 }
             }
 
@@ -649,18 +738,19 @@ void donate()
             {
                 std::cout << "Sorry the input is invalid" << nl;
             }
+
             std::cout << "press a key to continue" << nl;
             std::getline(std::cin, blank);
             std::system("clear");
         }
-        return;
     }
-
     else
     {
         std::cout << "could not read the file" << nl;
         std::abort();
     }
+
+    return;
 }
 
 int main()
@@ -669,65 +759,65 @@ int main()
     Menu menu_donor(choices_donor);
     // Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
 
-    // menu_interface(menu);
+    menu_interface(menu);
 
-    BloodStock my_stock;
+    // BloodStock my_stock;
 
-    std::vector<std::string> blood_types = {"AB+",
-                                            "AB-",
-                                            "O+",
-                                            "O-",
-                                            "A+",
-                                            "A-",
-                                            "B+",
-                                            "B-"};
+    // std::vector<std::string> blood_types = {"AB+",
+    //                                         "AB-",
+    //                                         "O+",
+    //                                         "O-",
+    //                                         "A+",
+    //                                         "A-",
+    //                                         "B+",
+    //                                         "B-"};
 
-    std::cout << "the stock before filling: " << nl;
-    std::cout << my_stock << nl;
-    for (int i = 0; i < blood_types.size(); i++)
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            my_stock.add_expiry_donor(blood_types[i], j);
-        }
-    }
-    std::cout << "the stock after filling: " << nl;
-    std::cout << my_stock << nl;
+    // std::cout << "the stock before filling: " << nl;
+    // std::cout << my_stock << nl;
+    // for (int i = 0; i < blood_types.size(); i++)
+    // {
+    //     for (int j = 0; j < 5; j++)
+    //     {
+    //         my_stock.add_expiry_donor(blood_types[i], j);
+    //     }
+    // }
+    // std::cout << "the stock after filling: " << nl;
+    // std::cout << my_stock << nl;
 
-    const std::string file_name = "bank";
-    std::cout << "bank" << nl;
-    std::ofstream output_file{};
+    // const std::string file_name = "bank";
+    // std::cout << "bank" << nl;
+    // std::ofstream output_file{};
 
-    output_file.open(file_name);
+    // output_file.open(file_name);
 
-    if (output_file.is_open())
-    {
-        output_file << my_stock << nl;
-    }
-    else
-    {
-        std::cout << "could not open the file" << nl;
-        std::abort();
-    }
-    output_file.close();
+    // if (output_file.is_open())
+    // {
+    //     output_file << my_stock << nl;
+    // }
+    // else
+    // {
+    //     std::cout << "could not open the file" << nl;
+    //     std::abort();
+    // }
+    // output_file.close();
 
-    std::ifstream input_file{};
+    // std::ifstream input_file{};
 
-    input_file.open(file_name);
-    std::string line{};
-    BloodStock my_stock1;
-    if (input_file.is_open())
-    {
-        input_file >> my_stock1;
-        std::cout << "reconstruction:" << nl;
-        std::cout << my_stock1 << nl;
-    }
-    else
-    {
-        std::cout << "could not open the file" << nl;
-        std::abort();
-    }
-    input_file.close();
+    // input_file.open(file_name);
+    // std::string line{};
+    // BloodStock my_stock1;
+    // if (input_file.is_open())
+    // {
+    //     input_file >> my_stock1;
+    //     std::cout << "reconstruction:" << nl;
+    //     std::cout << my_stock1 << nl;
+    // }
+    // else
+    // {
+    //     std::cout << "could not open the file" << nl;
+    //     std::abort();
+    // }
+    // input_file.close();
 
     return 0;
 }
@@ -766,6 +856,16 @@ std::istream &operator>>(std::istream &is, ABO &group)
 {
     is >> group.abo_group;
     return is;
+}
+
+std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &map)
+{
+    for (typename std::map<size_t, std::string>::const_iterator ii = map.begin(); ii != map.end(); ++ii)
+    {
+        os << ii->first << " " << ii->second << nl;
+    }
+
+    return os;
 }
 
 std::ostream &operator<<(std::ostream &os, const Menu &menu)
