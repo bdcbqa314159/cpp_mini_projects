@@ -9,15 +9,17 @@ const char nl = '\n';
 void adding_donor();
 void update_donor();
 void donate();
+void blood_packets();
 
-const std::vector<std::string> choices = {
-    "Add donor",
-    "Update donor",
-    "Add hospital",
-    "Donate",
-    "Request blood",
-    "Display available blood packets",
-    "Exit",
+const std::vector<std::string>
+    choices = {
+        "Add donor",
+        "Update donor",
+        "Add hospital",
+        "Donate",
+        "Request blood",
+        "Display available blood packets",
+        "Exit",
 };
 
 const std::vector<std::string> choices_donor = {
@@ -330,6 +332,21 @@ public:
         return;
     }
 
+    void display_summary()
+    {
+        for (auto it = blood_stock.begin(); it != blood_stock.end(); it++)
+        {
+            std::cout << it->first << " : " << it->second.size() << " packets." << nl;
+        }
+        return;
+    }
+
+    void update()
+    {
+        blood_stock.erase("");
+        return;
+    }
+
     friend std::ostream &operator<<(std::ostream &, const BloodStock &);
     friend std::istream &operator>>(std::istream &, BloodStock &);
 };
@@ -365,6 +382,8 @@ void menu_interface(Menu &myMenu)
                     update_donor();
                 else if (myMenu(choice) == "Donate")
                     donate();
+                else if (myMenu(choice) == "Display available blood packets")
+                    blood_packets();
             }
         }
         else
@@ -651,6 +670,7 @@ void donate()
                         if (input_file.is_open())
                         {
                             input_file >> the_blood_stock;
+                            the_blood_stock.update();
                             std::cout << "reconstruction:" << nl;
                         }
 
@@ -693,7 +713,7 @@ void donate()
 
                         std::ofstream output_file{};
 
-                        output_file.open(file_name);
+                        output_file.open(file_name, std::ofstream::trunc);
 
                         if (output_file.is_open())
                         {
@@ -753,71 +773,60 @@ void donate()
     return;
 }
 
+void blood_packets()
+{
+    const std::string file_name = "blood_stock";
+    BloodStock the_blood_stock{};
+    std::ifstream input_file{};
+
+    input_file.open(file_name);
+
+    if (input_file.is_open())
+    {
+        input_file >> the_blood_stock;
+        std::cout << "reconstruction:" << nl;
+        the_blood_stock.update();
+        the_blood_stock.display_summary();
+    }
+
+    else
+    {
+        std::cout << "could not open the file" << nl;
+        std::cout << "The bank is empty - we need donors!" << nl;
+    }
+    input_file.close();
+
+    return;
+}
+
 int main()
 {
     Menu menu(choices);
     Menu menu_donor(choices_donor);
-    // Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
 
     menu_interface(menu);
 
-    // BloodStock my_stock;
-
-    // std::vector<std::string> blood_types = {"AB+",
-    //                                         "AB-",
-    //                                         "O+",
-    //                                         "O-",
-    //                                         "A+",
-    //                                         "A-",
-    //                                         "B+",
-    //                                         "B-"};
-
-    // std::cout << "the stock before filling: " << nl;
-    // std::cout << my_stock << nl;
-    // for (int i = 0; i < blood_types.size(); i++)
-    // {
-    //     for (int j = 0; j < 5; j++)
-    //     {
-    //         my_stock.add_expiry_donor(blood_types[i], j);
-    //     }
-    // }
-    // std::cout << "the stock after filling: " << nl;
-    // std::cout << my_stock << nl;
-
-    // const std::string file_name = "bank";
-    // std::cout << "bank" << nl;
-    // std::ofstream output_file{};
-
-    // output_file.open(file_name);
-
-    // if (output_file.is_open())
-    // {
-    //     output_file << my_stock << nl;
-    // }
-    // else
-    // {
-    //     std::cout << "could not open the file" << nl;
-    //     std::abort();
-    // }
-    // output_file.close();
-
+    // const std::string file_name = "blood_stock";
+    // BloodStock the_blood_stock{};
     // std::ifstream input_file{};
 
     // input_file.open(file_name);
-    // std::string line{};
-    // BloodStock my_stock1;
+
     // if (input_file.is_open())
     // {
-    //     input_file >> my_stock1;
+    //     input_file >> the_blood_stock;
+    //     the_blood_stock.update();
     //     std::cout << "reconstruction:" << nl;
-    //     std::cout << my_stock1 << nl;
     // }
+
     // else
     // {
     //     std::cout << "could not open the file" << nl;
-    //     std::abort();
+    //     std::cout << "The bank is empty: " << nl;
     // }
     // input_file.close();
+
+    // std::cout << the_blood_stock << nl;
 
     return 0;
 }
