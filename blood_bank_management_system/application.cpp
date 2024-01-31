@@ -3,6 +3,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <sstream>
 
 const char nl = '\n';
 void adding_donor();
@@ -27,9 +28,6 @@ const std::vector<std::string> choices_donor = {
 };
 
 std::ostream &operator<<(std::ostream &, const std::map<size_t, std::string> &);
-
-std::ostream &operator<<(std::ostream &, const std::map<std::string, std::vector<int>> &);
-
 template <class T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
 {
@@ -51,6 +49,77 @@ std::istream &operator>>(std::istream &is, std::vector<T> &v)
     }
 
     return is;
+}
+
+// std::ostream &operator<<(std::ostream &, const std::map<std::string, std::vector<int>> &);
+
+template <class T, class U>
+std::ostream &operator<<(std::ostream &os, const std::map<T, U> &map)
+{
+    for (typename std::map<T, U>::const_iterator ii = map.begin(); ii != map.end(); ++ii)
+    {
+        os << ii->first << " ";
+        for (auto item : ii->second)
+            os << item << " ";
+        os << nl;
+    }
+    return os;
+}
+
+template <class T, class U>
+std::ostream &operator<<(std::ostream &os, const std::map<T, std::vector<U>> &map)
+{
+    for (typename std::map<T, std::vector<U>>::const_iterator ii = map.begin(); ii != map.end(); ++ii)
+    {
+        os << ii->first << " ";
+        for (auto item : ii->second)
+            os << item << " ";
+        os << nl;
+    }
+    return os;
+}
+
+// template <class T, class U>
+// std::istream &operator>>(std::istream &os, std::map<T, U> &map)
+// {
+//     std::string line{};
+//     BloodStock my_stock1;
+//     if (input_file.is_open())
+//     {
+//         while (getline(input_file, line))
+//         {
+//             std::istringstream is(line);
+
+//             std::string key{};
+//             is >> key;
+//             int value{};
+
+//             while (is >> value)
+//             {
+//                 my_stock1.add_expiry_donor(key, value);
+//             }
+//         }
+
+//         std::cout << "reconstruction:" << nl;
+//         std::cout << my_stock1 << nl;
+//     }
+// }
+
+template <class T, class U>
+std::istream &operator>>(std::istream &os, std::map<T, std::vector<U>> &map)
+{
+    std::string line{};
+    while (getline(os, line))
+    {
+        std::istringstream is(line);
+
+        std::string key{};
+        is >> key;
+        std::vector<U> v{};
+        is >> v;
+        map[key] = v;
+    }
+    return os;
 }
 
 class Person
@@ -235,7 +304,22 @@ public:
         }
     }
 
+    bool check(const std::string &input)
+    {
+        Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
+        return check_blood(input);
+    }
+
+    void add_expiry_donor(const std::string &abo, int expiry)
+    {
+        if (check(abo))
+            blood_stock[abo].push_back(expiry);
+
+        return;
+    }
+
     friend std::ostream &operator<<(std::ostream &, const BloodStock &);
+    friend std::istream &operator>>(std::istream &, BloodStock &);
 };
 
 void menu_interface(Menu &myMenu)
@@ -585,7 +669,65 @@ int main()
     Menu menu_donor(choices_donor);
     // Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
 
-    menu_interface(menu);
+    // menu_interface(menu);
+
+    BloodStock my_stock;
+
+    std::vector<std::string> blood_types = {"AB+",
+                                            "AB-",
+                                            "O+",
+                                            "O-",
+                                            "A+",
+                                            "A-",
+                                            "B+",
+                                            "B-"};
+
+    std::cout << "the stock before filling: " << nl;
+    std::cout << my_stock << nl;
+    for (int i = 0; i < blood_types.size(); i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            my_stock.add_expiry_donor(blood_types[i], j);
+        }
+    }
+    std::cout << "the stock after filling: " << nl;
+    std::cout << my_stock << nl;
+
+    const std::string file_name = "bank";
+    std::cout << "bank" << nl;
+    std::ofstream output_file{};
+
+    output_file.open(file_name);
+
+    if (output_file.is_open())
+    {
+        output_file << my_stock << nl;
+    }
+    else
+    {
+        std::cout << "could not open the file" << nl;
+        std::abort();
+    }
+    output_file.close();
+
+    std::ifstream input_file{};
+
+    input_file.open(file_name);
+    std::string line{};
+    BloodStock my_stock1;
+    if (input_file.is_open())
+    {
+        input_file >> my_stock1;
+        std::cout << "reconstruction:" << nl;
+        std::cout << my_stock1 << nl;
+    }
+    else
+    {
+        std::cout << "could not open the file" << nl;
+        std::abort();
+    }
+    input_file.close();
 
     return 0;
 }
@@ -626,20 +768,6 @@ std::istream &operator>>(std::istream &is, ABO &group)
     return is;
 }
 
-std::ostream &operator<<(std::ostream &os, const std::map<std::string, std::string> &map)
-{
-    for (auto it = map.begin(); it != map.end(); it++)
-        os << it->first << " " << it->second << nl;
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, const std::map<std::string, std::vector<int>> &map)
-{
-    for (auto it = map.begin(); it != map.end(); it++)
-        os << it->first << " " << it->second << nl;
-    return os;
-}
-
 std::ostream &operator<<(std::ostream &os, const Menu &menu)
 {
     os << menu.data;
@@ -671,5 +799,11 @@ std::map<std::string, std::string> DataMenu::operator()(const std::vector<std::s
 std::ostream &operator<<(std::ostream &os, const BloodStock &object)
 {
     os << object.blood_stock;
+    return os;
+}
+
+std::istream &operator>>(std::istream &os, BloodStock &object)
+{
+    os >> object.blood_stock;
     return os;
 }

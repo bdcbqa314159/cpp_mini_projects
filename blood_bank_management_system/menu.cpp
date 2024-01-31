@@ -125,13 +125,13 @@ Menu menuLoader(const std::string &filename)
 
 int main()
 {
+    std::ofstream MyFile("filename");
 
-    size_t in{};
+    // Write to the file
+    MyFile << "Files can be tricky, but it is fun enough!";
 
-    std::cout << "test >>> ";
-    std::cin >> in;
-
-    std::cout << in << " " << nl;
+    // Close the file
+    MyFile.close();
 
     return 0;
 }
