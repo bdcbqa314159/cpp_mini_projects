@@ -54,8 +54,6 @@ std::istream &operator>>(std::istream &is, std::vector<T> &v)
     return is;
 }
 
-// std::ostream &operator<<(std::ostream &, const std::map<std::string, std::vector<int>> &);
-
 template <class T, class U>
 std::ostream &operator<<(std::ostream &os, const std::map<T, U> &map)
 {
@@ -81,32 +79,6 @@ std::ostream &operator<<(std::ostream &os, const std::map<T, std::vector<U>> &ma
     }
     return os;
 }
-
-// template <class T, class U>
-// std::istream &operator>>(std::istream &os, std::map<T, U> &map)
-// {
-//     std::string line{};
-//     BloodStock my_stock1;
-//     if (input_file.is_open())
-//     {
-//         while (getline(input_file, line))
-//         {
-//             std::istringstream is(line);
-
-//             std::string key{};
-//             is >> key;
-//             int value{};
-
-//             while (is >> value)
-//             {
-//                 my_stock1.add_expiry_donor(key, value);
-//             }
-//         }
-
-//         std::cout << "reconstruction:" << nl;
-//         std::cout << my_stock1 << nl;
-//     }
-// }
 
 template <class T, class U>
 std::istream &operator>>(std::istream &os, std::map<T, std::vector<U>> &map)
@@ -237,6 +209,70 @@ public:
     friend std::ostream &operator<<(std::ostream &, const Donors &);
     friend std::istream &operator>>(std::istream &is, Donors &);
 };
+
+class Hospital
+{
+private:
+    std::string contact{};
+
+public:
+    void set_contact(const std::string &other_contact)
+    {
+        contact = other_contact;
+        return;
+    }
+
+    friend std::ostream &operator<<(std::ostream &, const Hospital &);
+    friend std::istream &operator>>(std::istream &, Hospital &);
+};
+
+std::ostream &operator<<(std::ostream &os, const Hospital &object)
+{
+    os << object.contact;
+    return os;
+}
+
+std::istream &operator>>(std::istream &os, Hospital &object)
+{
+    os >> object.contact;
+    return os;
+}
+
+class Hospitals
+{
+private:
+    std::vector<Hospital> data{};
+
+public:
+    Hospitals() = default;
+    Hospitals(const std::vector<Hospital> &other_data) : data(other_data) {}
+
+    void add(const Hospital &hospital)
+    {
+        data.push_back(hospital);
+        return;
+    }
+
+    Hospital &operator[](size_t index) { return data.at(index); }
+    Hospital operator[](size_t index) const { return data.at(index); }
+
+    size_t size() { return data.size(); }
+
+    friend std::ostream &operator<<(std::ostream &, const Hospitals &);
+    friend std::istream &operator>>(std::istream &is, Hospitals &);
+};
+
+std::ostream &operator<<(std::ostream &os, const Hospitals &Hospitals)
+{
+    os << Hospitals.data;
+    return os;
+}
+
+std::istream &operator>>(std::istream &is, Hospitals &Hospitals)
+{
+    is >> Hospitals.data;
+    return is;
+}
 
 class Checker
 {
@@ -775,6 +811,7 @@ void donate()
 
 void blood_packets()
 {
+
     const std::string file_name = "blood_stock";
     BloodStock the_blood_stock{};
     std::ifstream input_file{};
@@ -805,28 +842,6 @@ int main()
     Menu menu_donor(choices_donor);
 
     menu_interface(menu);
-
-    // const std::string file_name = "blood_stock";
-    // BloodStock the_blood_stock{};
-    // std::ifstream input_file{};
-
-    // input_file.open(file_name);
-
-    // if (input_file.is_open())
-    // {
-    //     input_file >> the_blood_stock;
-    //     the_blood_stock.update();
-    //     std::cout << "reconstruction:" << nl;
-    // }
-
-    // else
-    // {
-    //     std::cout << "could not open the file" << nl;
-    //     std::cout << "The bank is empty: " << nl;
-    // }
-    // input_file.close();
-
-    // std::cout << the_blood_stock << nl;
 
     return 0;
 }
