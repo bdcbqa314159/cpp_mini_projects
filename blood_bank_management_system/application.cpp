@@ -10,16 +10,17 @@ void adding_donor();
 void update_donor();
 void donate();
 void blood_packets();
+void adding_hospital();
+void request_blood();
 
-const std::vector<std::string>
-    choices = {
-        "Add donor",
-        "Update donor",
-        "Add hospital",
-        "Donate",
-        "Request blood",
-        "Display available blood packets",
-        "Exit",
+const std::vector<std::string> choices = {
+    "Add donor",
+    "Update donor",
+    "Add hospital",
+    "Donate",
+    "Request blood",
+    "Display available blood packets",
+    "Exit",
 };
 
 const std::vector<std::string> choices_donor = {
@@ -420,6 +421,10 @@ void menu_interface(Menu &myMenu)
                     donate();
                 else if (myMenu(choice) == "Display available blood packets")
                     blood_packets();
+                else if (myMenu(choice) == "Add hospital")
+                    adding_hospital();
+                else if (myMenu(choice) == "Request blood")
+                    request_blood();
             }
         }
         else
@@ -664,7 +669,6 @@ void donate()
                 std::cout << donor << nl;
                 std::cout << "will donate to the blood bank" << nl;
 
-                bool donate = false;
                 std::string input{};
                 while (true)
                 {
@@ -833,6 +837,102 @@ void blood_packets()
     }
     input_file.close();
 
+    return;
+}
+
+void adding_hospital()
+{
+    const std::string file_name = "hospitals_db";
+
+    Hospital hospital{};
+
+    std::string input{};
+
+    std::cout << "Enter contact for the hospital" << nl;
+    getline(std::cin, input);
+
+    hospital.set_contact(input);
+
+    std::ofstream output_file{};
+
+    output_file.open(file_name, std::ios_base::app);
+
+    if (output_file.is_open())
+    {
+        output_file << hospital << nl;
+        output_file.close();
+        std::cout << "**************************" << nl;
+        std::cout << hospital << nl;
+        std::cout << "Added into " << file_name << " database" << nl;
+        std::cout << "**************************" << nl;
+    }
+
+    else
+    {
+        std::cout << "could not open the file" << nl;
+        std::abort();
+    }
+}
+
+void request_blood()
+{
+    Hospitals total_hospitals_db{};
+    const std::string file_name = "hospitals_db";
+
+    std::ifstream input_file{};
+
+    input_file.open(file_name);
+
+    if (input_file.is_open())
+    {
+        input_file >> total_hospitals_db;
+        input_file.close();
+
+        while (true)
+        {
+            size_t input{};
+            std::string blank{};
+            size_t max_items = total_hospitals_db.size();
+            std::cout << "The list of hospitals is " << nl;
+            std::cout << "*****************************" << nl;
+            std::cout << total_hospitals_db << nl;
+            std::cout << "*****************************" << nl;
+            std::cout << "Give a number (press 0 to quit), limit: " << max_items << " >> ";
+            std::cin >> input;
+
+            if (input >= 1 && input <= max_items)
+            {
+                Hospital hospital = total_hospitals_db[input - 1];
+                std::cout << "this hospital :" << nl;
+                std::cout << hospital << nl;
+                std::cout << "is asking for blood" << nl;
+                std::string blank{};
+                std::cout << "press a key to continue" << nl;
+                std::getline(std::cin, blank);
+            }
+
+            else if (input == 0)
+            {
+                std::cout << "Ah ok - we quit" << nl;
+                break;
+            }
+
+            else
+            {
+                std::cout << "Sorry the input is invalid" << nl;
+            }
+
+            std::cout << "press a key to continue" << nl;
+            std::getline(std::cin, blank);
+            std::system("clear");
+        }
+    }
+
+    else
+    {
+        std::cout << "could not read the file" << nl;
+        std::abort();
+    }
     return;
 }
 
