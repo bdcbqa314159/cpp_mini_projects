@@ -31,7 +31,21 @@ const std::vector<std::string> choices_donor = {
     "Exit",
 };
 
-std::ostream &operator<<(std::ostream &, const std::map<size_t, std::string> &);
+const std::map<std::string, int> prices = {
+
+    {"O+", 64},
+    {"O-", 94},
+    {"A+", 63},
+    {"A-", 93},
+    {"B+", 91},
+    {"B-", 99},
+    {"AB+", 97},
+    {"AB-", 99}
+
+};
+
+std::ostream &
+operator<<(std::ostream &, const std::map<size_t, std::string> &);
 
 template <class T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
@@ -224,6 +238,13 @@ public:
         return;
     }
 
+    void pay(const std::string &abo)
+    {
+        int price = prices.at(abo);
+        std::cout << "The price is " << price << nl;
+        return;
+    }
+
     friend std::ostream &operator<<(std::ostream &, const Hospital &);
     friend std::istream &operator>>(std::istream &, Hospital &);
 };
@@ -379,7 +400,7 @@ public:
         return;
     }
 
-    void donate_abo(const std::string &abo)
+    bool donate_abo(const std::string &abo)
     {
         if (check(abo))
         {
@@ -388,14 +409,17 @@ public:
                 std::sort(blood_stock.at(abo).begin(), blood_stock.at(abo).end(), std::greater<int>());
                 std::cout << "This expiration has been donated: " << blood_stock.at(abo).back() << nl;
                 blood_stock.at(abo).pop_back();
+                return true;
             }
 
             else
             {
                 std::cout << "Sorry we don't have this " << abo << " in our bank" << nl;
+                return false;
             }
         }
-        return;
+
+        return false;
     }
 
     void update()
@@ -962,6 +986,9 @@ void request_blood()
                     {
                         std::cout << "You choose " << input_abo << nl;
                         the_blood_stock.donate_abo(input_abo);
+
+                        hospital.pay(input_abo);
+
                         std::cout << "Thanks ... " << nl;
                         std::cout << "Updating database" << nl;
 
