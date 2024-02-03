@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 const char nl = '\n';
 void adding_donor();
@@ -374,6 +375,25 @@ public:
         for (auto it = blood_stock.begin(); it != blood_stock.end(); it++)
         {
             std::cout << it->first << " : " << it->second.size() << " packets." << nl;
+        }
+        return;
+    }
+
+    void donate_abo(const std::string &abo)
+    {
+        if (check(abo))
+        {
+            if (blood_stock[abo].size() > 0)
+            {
+                std::sort(blood_stock.at(abo).begin(), blood_stock.at(abo).end(), std::greater<int>());
+                std::cout << "This expiration has been donated: " << blood_stock.at(abo).back() << nl;
+                blood_stock.at(abo).pop_back();
+            }
+
+            else
+            {
+                std::cout << "Sorry we don't have this " << abo << " in our bank" << nl;
+            }
         }
         return;
     }
@@ -891,7 +911,6 @@ void request_blood()
         while (true)
         {
             size_t input{};
-            std::string blank{};
             size_t max_items = total_hospitals_db.size();
             std::cout << "The list of hospitals is " << nl;
             std::cout << "*****************************" << nl;
@@ -899,6 +918,7 @@ void request_blood()
             std::cout << "*****************************" << nl;
             std::cout << "Give a number (press 0 to quit), limit: " << max_items << " >> ";
             std::cin >> input;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
 
             if (input >= 1 && input <= max_items)
             {
@@ -906,9 +926,75 @@ void request_blood()
                 std::cout << "this hospital :" << nl;
                 std::cout << hospital << nl;
                 std::cout << "is asking for blood" << nl;
-                std::string blank{};
-                std::cout << "press a key to continue" << nl;
-                std::getline(std::cin, blank);
+
+                const std::string file_name = "blood_stock";
+                BloodStock the_blood_stock{};
+                std::ifstream input_file{};
+
+                input_file.open(file_name);
+
+                if (input_file.is_open())
+                {
+                    input_file >> the_blood_stock;
+                    the_blood_stock.update();
+                    std::cout << "reconstruction:" << nl;
+                    std::cout << the_blood_stock << nl;
+                }
+
+                else
+                {
+                    std::cout << "could not open the file" << nl;
+                    std::cout << "The bank is empty: " << nl;
+                    std::cout << "We can not donate anything - sorry " << nl;
+                    break;
+                }
+
+                input_file.close();
+
+                while (true)
+                {
+                    std::string input_abo{};
+                    Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
+                    std::cout << "Which abo do you need ? " << nl;
+                    std::getline(std::cin, input_abo);
+
+                    if (check_blood(input_abo))
+                    {
+                        std::cout << "You choose " << input_abo << nl;
+                        the_blood_stock.donate_abo(input_abo);
+                        std::cout << "Thanks ... " << nl;
+                        std::cout << "Updating database" << nl;
+
+                        std::ofstream output_file{};
+
+                        output_file.open(file_name, std::ofstream::trunc);
+
+                        if (output_file.is_open())
+                        {
+                            output_file << the_blood_stock << nl;
+                            output_file.close();
+                            std::cout << "**************************" << nl;
+                            std::cout << "Database updated" << nl;
+                            std::cout << "**************************" << nl;
+                        }
+
+                        else
+                        {
+                            std::cout << "could not open the file" << nl;
+                            std::abort();
+                        }
+
+                        break;
+                    }
+
+                    else
+                    {
+                        std::cout << "sorry wrong input" << nl;
+                    }
+                    std::cout << "press a key to continue" << nl;
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
+                    std::system("clear");
+                }
             }
 
             else if (input == 0)
@@ -923,7 +1009,7 @@ void request_blood()
             }
 
             std::cout << "press a key to continue" << nl;
-            std::getline(std::cin, blank);
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
             std::system("clear");
         }
     }

@@ -1,137 +1,59 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <map>
 #include <utility>
 
 const char nl = '\n';
 
-class Menu
+template <class T>
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
 {
-
-public:
-    Menu() = default;
-    Menu(const std::map<size_t, std::string> &other_data)
+    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
     {
-        data = other_data;
-    }
-
-    std::map<size_t, std::string> data{};
-
-    void add(const std::string &name)
-    {
-        data.insert(std::make_pair(data.size() + 1, name));
-    }
-
-    void save(const std::string &filename)
-    {
-        std::ofstream output_file{};
-
-        output_file.open(filename, std::ios::binary);
-
-        if (output_file.is_open())
-        {
-            output_file.write(reinterpret_cast<char *>(this), sizeof(Menu));
-            output_file.close();
-        }
-
-        else
-        {
-            std::cout << "could not open the file" << nl;
-            std::abort();
-        }
-        return;
-    }
-    friend std::ostream &operator<<(std::ostream &, const Menu &);
-};
-
-Menu menuLoader(const std::string &filename);
-
-// int main()
-// {
-
-//     std::cout << "Hey" << nl;
-
-//     Menu myMenu;
-
-//     myMenu.add("Add option");
-//     myMenu.add("Save status");
-//     myMenu.add("Quit");
-//     std::cout << myMenu << nl;
-
-//     std::string filename = "my_menu_blood_bank";
-//     myMenu.save(filename);
-
-//     Menu output = menuLoader(filename);
-
-//     std::cout << output.data.size() << nl;
-
-//     return 0;
-// }
-
-std::ostream &operator<<(std::ostream &os, const Menu &menu)
-{
-    auto it = menu.data.begin();
-    for (; it != menu.data.end(); ++it)
-    {
-        os << it->first << ". " << it->second << nl;
+        os << *ii << nl;
     }
 
     return os;
 }
-
-// void menuSaver(const std::string &filename, Menu &obj)
-// {
-//     std::ofstream output_file{};
-
-//     output_file.open(filename, std::ios::binary);
-
-//     if (output_file.is_open())
-//     {
-//         output_file.write(reinterpret_cast<char *>(&obj), sizeof(Menu));
-//         output_file.close();
-//     }
-
-//     else
-//     {
-//         std::cout << "could not open the file" << nl;
-//         std::abort();
-//     }
-//     return;
-// }
-
-Menu menuLoader(const std::string &filename)
-{
-
-    Menu output{};
-
-    std::ifstream input_file{};
-
-    input_file.open(filename, std::ios::binary);
-
-    if (input_file.is_open())
-    {
-        input_file.read(reinterpret_cast<char *>(&output), sizeof(Menu));
-        input_file.close();
-    }
-
-    else
-    {
-        std::cout << "could not read the file" << nl;
-        std::abort();
-    }
-
-    return output;
-}
+// cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
 int main()
 {
-    std::ofstream MyFile("filename");
+    std::vector<int> u = {1, 2, 3, 4, 5, 6, 7};
 
-    // Write to the file
-    MyFile << "Files can be tricky, but it is fun enough!";
+    while (true)
+    {
+        size_t max = u.size();
+        size_t input{};
+        std::string blank{};
+        std::cout << "vector" << nl;
+        std::cout << u << nl;
 
-    // Close the file
-    MyFile.close();
+        std::cout << "choose a number: 0 to quit, and max is " << max << " :" << nl;
+
+        std::cin >> input;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
+
+        if (input >= 1 && input <= max)
+        {
+            std::cout << "this is good, you chose: " << input << nl;
+        }
+
+        else if (input == 0)
+        {
+            std::cout << "ok now it is over..." << nl;
+            break;
+        }
+        else
+        {
+            std::cout << "Bad input" << nl;
+        }
+
+        std::cout << "press a key to continue" << nl;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
+        std::system("clear");
+    }
 
     return 0;
 }
