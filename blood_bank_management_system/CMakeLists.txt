@@ -2,7 +2,7 @@ set(EXE_SOURCE_1
     code.cpp)
 
 set (EXE_TESTS
-    application.cpp)
+    application.cpp DataMenu.hpp Datamenu.cpp)
 
 set (EXE_MENU
     menu.cpp)

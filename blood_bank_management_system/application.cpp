@@ -6,6 +6,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include "DataMenu.hpp"
+
 const char nl = '\n';
 void adding_donor();
 void update_donor();
@@ -316,12 +318,6 @@ public:
     {
         return data.find(input) != data.end();
     }
-};
-
-struct DataMenu
-{
-    std::map<std::string, std::string> data{};
-    std::map<std::string, std::string> operator()(const std::vector<std::string> &);
 };
 
 class Menu
@@ -1121,16 +1117,6 @@ std::istream &operator>>(std::istream &is, Donors &donors)
 {
     is >> donors.data;
     return is;
-}
-
-std::map<std::string, std::string> DataMenu::operator()(const std::vector<std::string> &choices)
-{
-
-    std::map<std::string, std::string> map{};
-    for (size_t i = 0; i < choices.size(); i++)
-        map.insert(std::make_pair(std::to_string(i + 1), choices.at(i)));
-
-    return map;
 }
 
 std::ostream &operator<<(std::ostream &os, const BloodStock &object)
