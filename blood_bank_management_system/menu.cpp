@@ -2,58 +2,54 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <set>
 #include <utility>
 
-const char nl = '\n';
+#include "Checker.hpp"
+#include "DataMenu.hpp"
+#include "io_utility.hpp"
+#include "data.hpp"
 
-template <class T>
-std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
+class Menu
 {
-    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
+private:
+    std::map<std::string, std::string> data{};
+    Checker myChecker{};
+
+public:
+    Menu() = default;
+    Menu(const std::vector<std::string> &choice_data) : data(DataMenu()(choice_data))
     {
-        os << *ii << nl;
+        std::set<std::string> myset{};
+        for (size_t i = 1; i <= choice_data.size(); ++i)
+            myset.insert(std::to_string(i));
+        myChecker.set_data(myset);
     }
 
-    return os;
-}
-// cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    bool check(const std::string &input)
+    {
+        return myChecker(input);
+    }
+
+    std::string operator()(const std::string &input)
+    {
+        return data[input];
+    }
+
+    friend std::ostream &operator<<(std::ostream &, const Menu &);
+};
 
 int main()
 {
-    std::vector<int> u = {1, 2, 3, 4, 5, 6, 7};
+    Menu menu(choices);
 
-    while (true)
-    {
-        size_t max = u.size();
-        size_t input{};
-        std::string blank{};
-        std::cout << "vector" << nl;
-        std::cout << u << nl;
-
-        std::cout << "choose a number: 0 to quit, and max is " << max << " :" << nl;
-
-        std::cin >> input;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
-
-        if (input >= 1 && input <= max)
-        {
-            std::cout << "this is good, you chose: " << input << nl;
-        }
-
-        else if (input == 0)
-        {
-            std::cout << "ok now it is over..." << nl;
-            break;
-        }
-        else
-        {
-            std::cout << "Bad input" << nl;
-        }
-
-        std::cout << "press a key to continue" << nl;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
-        std::system("clear");
-    }
+    std::cout << menu << nl;
 
     return 0;
+}
+
+std::ostream &operator<<(std::ostream &os, const Menu &menu)
+{
+    os << menu.data;
+    return os;
 }
