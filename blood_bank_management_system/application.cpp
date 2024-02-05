@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "Person.hpp"
+#include "ABO.hpp"
 #include "Menu.hpp"
 
 void adding_donor();
@@ -105,32 +106,32 @@ std::istream &operator>>(std::istream &os, std::map<T, std::vector<U>> &map)
     return os;
 }
 
-class ABO
-{
-public:
-    ABO() = default;
-    ABO(const std::string &group) : abo_group(group) {}
-    ABO(const std::string &&group) : abo_group(group) {}
+// class ABO
+// {
+// public:
+//     ABO() = default;
+//     ABO(const std::string &group) : abo_group(group) {}
+//     ABO(const std::string &&group) : abo_group(group) {}
 
-    ABO &operator=(const ABO &other)
-    {
-        if (this != &other)
-            abo_group = other.abo_group;
+//     ABO &operator=(const ABO &other)
+//     {
+//         if (this != &other)
+//             abo_group = other.abo_group;
 
-        return *this;
-    }
+//         return *this;
+//     }
 
-    std::string get_string() const
-    {
-        return abo_group;
-    }
+//     std::string get_string() const
+//     {
+//         return abo_group;
+//     }
 
-    friend std::ostream &operator<<(std::ostream &, const ABO &);
-    friend std::istream &operator>>(std::istream &, ABO &);
+//     friend std::ostream &operator<<(std::ostream &, const ABO &);
+//     friend std::istream &operator>>(std::istream &, ABO &);
 
-private:
-    std::string abo_group{};
-};
+// private:
+//     std::string abo_group{};
+// };
 
 class Donor : public Person
 {
@@ -988,17 +989,17 @@ std::istream &operator>>(std::istream &is, Donor &donor)
     return is;
 }
 
-std::ostream &operator<<(std::ostream &os, const ABO &group)
-{
-    os << group.abo_group;
-    return os;
-}
+// std::ostream &operator<<(std::ostream &os, const ABO &group)
+// {
+//     os << group.abo_group;
+//     return os;
+// }
 
-std::istream &operator>>(std::istream &is, ABO &group)
-{
-    is >> group.abo_group;
-    return is;
-}
+// std::istream &operator>>(std::istream &is, ABO &group)
+// {
+//     is >> group.abo_group;
+//     return is;
+// }
 
 std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &map)
 {
