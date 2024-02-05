@@ -20,7 +20,9 @@ set (EXE_TESTS application.cpp
                 Hospital.hpp
                 Hospital.cpp
                 Hospitals.hpp
-                Hospitals.cpp)
+                Hospitals.cpp
+                BloodStock.hpp
+                BloodStock.cpp)
 
 add_executable(${PROJECT_1} ${EXE_SOURCE_1})
 add_executable(tests ${EXE_TESTS})
