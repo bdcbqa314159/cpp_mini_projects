@@ -6,8 +6,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include "Person.hpp"
-#include "ABO.hpp"
+#include "Donors.hpp"
 #include "Menu.hpp"
 
 void adding_donor();
@@ -16,13 +15,6 @@ void donate();
 void blood_packets();
 void adding_hospital();
 void request_blood();
-
-const std::vector<std::string> choices_donor = {
-    "Update name",
-    "Update contact",
-    "Update fitness status",
-    "Exit",
-};
 
 const std::map<std::string, int> prices = {
 
@@ -49,18 +41,6 @@ std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
     }
 
     return os;
-}
-
-template <class T>
-std::istream &operator>>(std::istream &is, std::vector<T> &v)
-{
-    T element{};
-    while (is >> element)
-    {
-        v.push_back(element);
-    }
-
-    return is;
 }
 
 template <class T, class U>
@@ -106,99 +86,29 @@ std::istream &operator>>(std::istream &os, std::map<T, std::vector<U>> &map)
     return os;
 }
 
-// class ABO
+// class Donors
 // {
-// public:
-//     ABO() = default;
-//     ABO(const std::string &group) : abo_group(group) {}
-//     ABO(const std::string &&group) : abo_group(group) {}
-
-//     ABO &operator=(const ABO &other)
-//     {
-//         if (this != &other)
-//             abo_group = other.abo_group;
-
-//         return *this;
-//     }
-
-//     std::string get_string() const
-//     {
-//         return abo_group;
-//     }
-
-//     friend std::ostream &operator<<(std::ostream &, const ABO &);
-//     friend std::istream &operator>>(std::istream &, ABO &);
-
 // private:
-//     std::string abo_group{};
+//     std::vector<Donor> data{};
+
+// public:
+//     Donors() = default;
+//     Donors(const std::vector<Donor> &other_data) : data(other_data) {}
+
+//     void add(const Donor &donor)
+//     {
+//         data.push_back(donor);
+//         return;
+//     }
+
+//     Donor &operator[](size_t index) { return data.at(index); }
+//     Donor operator[](size_t index) const { return data.at(index); }
+
+//     size_t size() { return data.size(); }
+
+//     friend std::ostream &operator<<(std::ostream &, const Donors &);
+//     friend std::istream &operator>>(std::istream &is, Donors &);
 // };
-
-class Donor : public Person
-{
-private:
-    std::string contact{};
-    bool fit{};
-    ABO abo{};
-
-public:
-    Donor() = default;
-    Donor(const Person &other) : Person(other), contact{}, fit{}, abo{} {}
-
-    void set_contact(const std::string &other_contact)
-    {
-        contact = other_contact;
-        return;
-    }
-
-    void set_fit(const bool &other_fit)
-    {
-        fit = other_fit;
-        return;
-    }
-
-    ABO get_abo() const
-    {
-        return abo;
-    }
-
-    void set_abo(const ABO &other_abo)
-    {
-        abo = other_abo;
-        return;
-    }
-
-    bool get_fit()
-    {
-        return fit;
-    }
-
-    friend std::ostream &operator<<(std::ostream &, const Donor &);
-    friend std::istream &operator>>(std::istream &is, Donor &);
-};
-
-class Donors
-{
-private:
-    std::vector<Donor> data{};
-
-public:
-    Donors() = default;
-    Donors(const std::vector<Donor> &other_data) : data(other_data) {}
-
-    void add(const Donor &donor)
-    {
-        data.push_back(donor);
-        return;
-    }
-
-    Donor &operator[](size_t index) { return data.at(index); }
-    Donor operator[](size_t index) const { return data.at(index); }
-
-    size_t size() { return data.size(); }
-
-    friend std::ostream &operator<<(std::ostream &, const Donors &);
-    friend std::istream &operator>>(std::istream &is, Donors &);
-};
 
 class Hospital
 {
@@ -970,36 +880,11 @@ void request_blood()
 int main()
 {
     Menu menu(choices);
-    Menu menu_donor(choices_donor);
 
     menu_interface(menu);
 
     return 0;
 }
-
-std::ostream &operator<<(std::ostream &os, const Donor &donor)
-{
-    os << donor.name << " " << donor.contact << " " << donor.fit << " " << donor.abo;
-    return os;
-}
-
-std::istream &operator>>(std::istream &is, Donor &donor)
-{
-    is >> donor.name >> donor.contact >> donor.fit >> donor.abo;
-    return is;
-}
-
-// std::ostream &operator<<(std::ostream &os, const ABO &group)
-// {
-//     os << group.abo_group;
-//     return os;
-// }
-
-// std::istream &operator>>(std::istream &is, ABO &group)
-// {
-//     is >> group.abo_group;
-//     return is;
-// }
 
 std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &map)
 {
@@ -1011,17 +896,17 @@ std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const Donors &donors)
-{
-    os << donors.data;
-    return os;
-}
+// std::ostream &operator<<(std::ostream &os, const Donors &donors)
+// {
+//     os << donors.data;
+//     return os;
+// }
 
-std::istream &operator>>(std::istream &is, Donors &donors)
-{
-    is >> donors.data;
-    return is;
-}
+// std::istream &operator>>(std::istream &is, Donors &donors)
+// {
+//     is >> donors.data;
+//     return is;
+// }
 
 std::ostream &operator<<(std::ostream &os, const BloodStock &object)
 {
