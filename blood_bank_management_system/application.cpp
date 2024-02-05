@@ -6,6 +6,7 @@
 #include <sstream>
 #include <algorithm>
 
+#include "Hospital.hpp"
 #include "Donors.hpp"
 #include "Menu.hpp"
 
@@ -16,32 +17,21 @@ void blood_packets();
 void adding_hospital();
 void request_blood();
 
-const std::map<std::string, int> prices = {
+// const std::map<std::string, int> prices = {
 
-    {"O+", 64},
-    {"O-", 94},
-    {"A+", 63},
-    {"A-", 93},
-    {"B+", 91},
-    {"B-", 99},
-    {"AB+", 97},
-    {"AB-", 99}
+//     {"O+", 64},
+//     {"O-", 94},
+//     {"A+", 63},
+//     {"A-", 93},
+//     {"B+", 91},
+//     {"B-", 99},
+//     {"AB+", 97},
+//     {"AB-", 99}
 
-};
+// };
 
 std::ostream &
 operator<<(std::ostream &, const std::map<size_t, std::string> &);
-
-template <class T>
-std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
-{
-    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
-    {
-        os << *ii << nl;
-    }
-
-    return os;
-}
 
 template <class T, class U>
 std::ostream &operator<<(std::ostream &os, const std::map<T, U> &map)
@@ -86,64 +76,40 @@ std::istream &operator>>(std::istream &os, std::map<T, std::vector<U>> &map)
     return os;
 }
 
-// class Donors
+// class Hospital
 // {
 // private:
-//     std::vector<Donor> data{};
+//     std::string contact{};
 
 // public:
-//     Donors() = default;
-//     Donors(const std::vector<Donor> &other_data) : data(other_data) {}
-
-//     void add(const Donor &donor)
+//     void set_contact(const std::string &other_contact)
 //     {
-//         data.push_back(donor);
+//         contact = other_contact;
 //         return;
 //     }
 
-//     Donor &operator[](size_t index) { return data.at(index); }
-//     Donor operator[](size_t index) const { return data.at(index); }
+//     void pay(const std::string &abo)
+//     {
+//         int price = prices.at(abo);
+//         std::cout << "The price is " << price << nl;
+//         return;
+//     }
 
-//     size_t size() { return data.size(); }
-
-//     friend std::ostream &operator<<(std::ostream &, const Donors &);
-//     friend std::istream &operator>>(std::istream &is, Donors &);
+//     friend std::ostream &operator<<(std::ostream &, const Hospital &);
+//     friend std::istream &operator>>(std::istream &, Hospital &);
 // };
 
-class Hospital
-{
-private:
-    std::string contact{};
+// std::ostream &operator<<(std::ostream &os, const Hospital &object)
+// {
+//     os << object.contact;
+//     return os;
+// }
 
-public:
-    void set_contact(const std::string &other_contact)
-    {
-        contact = other_contact;
-        return;
-    }
-
-    void pay(const std::string &abo)
-    {
-        int price = prices.at(abo);
-        std::cout << "The price is " << price << nl;
-        return;
-    }
-
-    friend std::ostream &operator<<(std::ostream &, const Hospital &);
-    friend std::istream &operator>>(std::istream &, Hospital &);
-};
-
-std::ostream &operator<<(std::ostream &os, const Hospital &object)
-{
-    os << object.contact;
-    return os;
-}
-
-std::istream &operator>>(std::istream &os, Hospital &object)
-{
-    os >> object.contact;
-    return os;
-}
+// std::istream &operator>>(std::istream &os, Hospital &object)
+// {
+//     os >> object.contact;
+//     return os;
+// }
 
 class Hospitals
 {
@@ -895,18 +861,6 @@ std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &
 
     return os;
 }
-
-// std::ostream &operator<<(std::ostream &os, const Donors &donors)
-// {
-//     os << donors.data;
-//     return os;
-// }
-
-// std::istream &operator>>(std::istream &is, Donors &donors)
-// {
-//     is >> donors.data;
-//     return is;
-// }
 
 std::ostream &operator<<(std::ostream &os, const BloodStock &object)
 {
