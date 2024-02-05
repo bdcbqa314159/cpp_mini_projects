@@ -6,6 +6,7 @@
 #include <sstream>
 #include <algorithm>
 
+#include "Person.hpp"
 #include "Menu.hpp"
 
 void adding_donor();
@@ -103,25 +104,6 @@ std::istream &operator>>(std::istream &os, std::map<T, std::vector<U>> &map)
     }
     return os;
 }
-
-class Person
-{
-protected:
-    std::string name{};
-
-public:
-    Person() = default;
-    Person(const std::string &other_name) : name(other_name) {}
-
-    void set_name(const std::string &other_name)
-    {
-        name = other_name;
-        return;
-    }
-
-    friend std::ostream &operator<<(std::ostream &, const Person &);
-    friend std::istream &operator>>(std::istream &is, Person &);
-};
 
 class ABO
 {
@@ -994,18 +976,6 @@ int main()
     return 0;
 }
 
-std::ostream &operator<<(std::ostream &os, const Person &person)
-{
-    os << person.name;
-    return os;
-}
-
-std::istream &operator>>(std::istream &is, Person &person)
-{
-    is >> person.name;
-    return is;
-}
-
 std::ostream &operator<<(std::ostream &os, const Donor &donor)
 {
     os << donor.name << " " << donor.contact << " " << donor.fit << " " << donor.abo;
@@ -1039,12 +1009,6 @@ std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &
 
     return os;
 }
-
-// std::ostream &operator<<(std::ostream &os, const Menu &menu)
-// {
-//     os << menu.data;
-//     return os;
-// }
 
 std::ostream &operator<<(std::ostream &os, const Donors &donors)
 {
