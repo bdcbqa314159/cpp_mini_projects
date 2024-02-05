@@ -288,56 +288,6 @@ std::istream &operator>>(std::istream &is, Hospitals &Hospitals)
     return is;
 }
 
-// class Checker
-// {
-// private:
-//     std::set<std::string> data{};
-
-// public:
-//     Checker() = default;
-//     Checker(const std::set<std::string> &other_data) : data(other_data) {}
-
-//     void set_data(const std::set<std::string> &other_data)
-//     {
-//         data = other_data;
-//         return;
-//     }
-
-//     bool operator()(const std::string &input) const
-//     {
-//         return data.find(input) != data.end();
-//     }
-// };
-
-// class Menu
-// {
-// private:
-//     std::map<std::string, std::string> data{};
-//     Checker myChecker{};
-
-// public:
-//     Menu() = default;
-//     Menu(const std::vector<std::string> &choice_data) : data(DataMenu()(choice_data))
-//     {
-//         std::set<std::string> myset{};
-//         for (size_t i = 1; i <= choice_data.size(); ++i)
-//             myset.insert(std::to_string(i));
-//         myChecker.set_data(myset);
-//     }
-
-//     bool check(const std::string &input)
-//     {
-//         return myChecker(input);
-//     }
-
-//     std::string operator()(const std::string &input)
-//     {
-//         return data[input];
-//     }
-
-//     friend std::ostream &operator<<(std::ostream &, const Menu &);
-// };
-
 class BloodStock
 {
 private:
