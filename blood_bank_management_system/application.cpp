@@ -3,7 +3,6 @@
 #include <set>
 #include <map>
 #include <vector>
-
 #include <algorithm>
 
 #include "Hospitals.hpp"
@@ -17,131 +16,6 @@ void donate();
 void blood_packets();
 void adding_hospital();
 void request_blood();
-
-// std::ostream &
-// operator<<(std::ostream &, const std::map<size_t, std::string> &);
-
-// template <class T, class U>
-// std::ostream &operator<<(std::ostream &os, const std::map<T, U> &map)
-// {
-//     for (typename std::map<T, U>::const_iterator ii = map.begin(); ii != map.end(); ++ii)
-//     {
-//         os << ii->first << " ";
-//         for (auto item : ii->second)
-//             os << item << " ";
-//         os << nl;
-//     }
-//     return os;
-// }
-
-// template <class T, class U>
-// std::ostream &operator<<(std::ostream &os, const std::map<T, std::vector<U>> &map)
-// {
-//     for (typename std::map<T, std::vector<U>>::const_iterator ii = map.begin(); ii != map.end(); ++ii)
-//     {
-//         os << ii->first << " ";
-//         for (auto item : ii->second)
-//             os << item << " ";
-//         os << nl;
-//     }
-//     return os;
-// }
-
-// template <class T, class U>
-// std::istream &operator>>(std::istream &os, std::map<T, std::vector<U>> &map)
-// {
-//     std::string line{};
-//     while (getline(os, line))
-//     {
-//         std::istringstream is(line);
-
-//         std::string key{};
-//         is >> key;
-//         std::vector<U> v{};
-//         is >> v;
-//         map[key] = v;
-//     }
-//     return os;
-// }
-
-// class BloodStock
-// {
-// private:
-//     std::map<std::string, std::vector<int>> blood_stock{};
-
-// public:
-//     BloodStock()
-//     {
-//         std::set<std::string> types = {
-//             "AB+",
-//             "AB-",
-//             "O+",
-//             "O-",
-//             "A+",
-//             "A-",
-//             "B+",
-//             "B-"};
-
-//         for (auto type : types)
-//         {
-//             blood_stock.insert(std::pair<std::string, std::vector<int>>(type, {}));
-//         }
-//     }
-
-//     bool check(const std::string &input)
-//     {
-//         Checker check_blood({"AB+", "AB-", "O+", "O-", "A+", "A-", "B+", "B-"});
-//         return check_blood(input);
-//     }
-
-//     void add_expiry_donor(const std::string &abo, int expiry)
-//     {
-//         if (check(abo))
-//             blood_stock[abo].push_back(expiry);
-
-//         return;
-//     }
-
-//     void display_summary()
-//     {
-//         for (auto it = blood_stock.begin(); it != blood_stock.end(); it++)
-//         {
-//             std::cout << it->first << " : " << it->second.size() << " packets." << nl;
-//         }
-//         return;
-//     }
-
-//     bool donate_abo(const std::string &abo)
-//     {
-//         if (check(abo))
-//         {
-//             if (blood_stock[abo].size() > 0)
-//             {
-//                 std::sort(blood_stock.at(abo).begin(), blood_stock.at(abo).end(), std::greater<int>());
-//                 std::cout << "This expiration has been donated: " << blood_stock.at(abo).back() << nl;
-//                 blood_stock.at(abo).pop_back();
-//                 return true;
-//             }
-
-//             else
-//             {
-//                 std::cout << "Sorry we don't have this " << abo << " in our bank" << nl;
-//                 return false;
-//             }
-//         }
-
-//         return false;
-//     }
-
-//     void update()
-//     {
-//         blood_stock.erase("");
-//         return;
-//     }
-
-//     friend std::ostream &operator<<(std::ostream &, const BloodStock &);
-//     friend std::istream &operator>>(std::istream &, BloodStock &);
-// };
 
 void menu_interface(Menu &myMenu)
 {
@@ -768,25 +642,3 @@ int main()
 
     return 0;
 }
-
-// std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &map)
-// {
-//     for (typename std::map<size_t, std::string>::const_iterator ii = map.begin(); ii != map.end(); ++ii)
-//     {
-//         os << ii->first << " " << ii->second << nl;
-//     }
-
-//     return os;
-// }
-
-// std::ostream &operator<<(std::ostream &os, const BloodStock &object)
-// {
-//     os << object.blood_stock;
-//     return os;
-// }
-
-// std::istream &operator>>(std::istream &os, BloodStock &object)
-// {
-//     os >> object.blood_stock;
-//     return os;
-// }
