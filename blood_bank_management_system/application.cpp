@@ -6,25 +6,14 @@
 #include <sstream>
 #include <algorithm>
 
-#include "DataMenu.hpp"
+#include "Menu.hpp"
 
-const char nl = '\n';
 void adding_donor();
 void update_donor();
 void donate();
 void blood_packets();
 void adding_hospital();
 void request_blood();
-
-const std::vector<std::string> choices = {
-    "Add donor",
-    "Update donor",
-    "Add hospital",
-    "Donate",
-    "Request blood",
-    "Display available blood packets",
-    "Exit",
-};
 
 const std::vector<std::string> choices_donor = {
     "Update name",
@@ -299,55 +288,55 @@ std::istream &operator>>(std::istream &is, Hospitals &Hospitals)
     return is;
 }
 
-class Checker
-{
-private:
-    std::set<std::string> data{};
+// class Checker
+// {
+// private:
+//     std::set<std::string> data{};
 
-public:
-    Checker() = default;
-    Checker(const std::set<std::string> &other_data) : data(other_data) {}
+// public:
+//     Checker() = default;
+//     Checker(const std::set<std::string> &other_data) : data(other_data) {}
 
-    void set_data(const std::set<std::string> &other_data)
-    {
-        data = other_data;
-        return;
-    }
+//     void set_data(const std::set<std::string> &other_data)
+//     {
+//         data = other_data;
+//         return;
+//     }
 
-    bool operator()(const std::string &input) const
-    {
-        return data.find(input) != data.end();
-    }
-};
+//     bool operator()(const std::string &input) const
+//     {
+//         return data.find(input) != data.end();
+//     }
+// };
 
-class Menu
-{
-private:
-    std::map<std::string, std::string> data{};
-    Checker myChecker{};
+// class Menu
+// {
+// private:
+//     std::map<std::string, std::string> data{};
+//     Checker myChecker{};
 
-public:
-    Menu() = default;
-    Menu(const std::vector<std::string> &choice_data) : data(DataMenu()(choice_data))
-    {
-        std::set<std::string> myset{};
-        for (size_t i = 1; i <= choice_data.size(); ++i)
-            myset.insert(std::to_string(i));
-        myChecker.set_data(myset);
-    }
+// public:
+//     Menu() = default;
+//     Menu(const std::vector<std::string> &choice_data) : data(DataMenu()(choice_data))
+//     {
+//         std::set<std::string> myset{};
+//         for (size_t i = 1; i <= choice_data.size(); ++i)
+//             myset.insert(std::to_string(i));
+//         myChecker.set_data(myset);
+//     }
 
-    bool check(const std::string &input)
-    {
-        return myChecker(input);
-    }
+//     bool check(const std::string &input)
+//     {
+//         return myChecker(input);
+//     }
 
-    std::string operator()(const std::string &input)
-    {
-        return data[input];
-    }
+//     std::string operator()(const std::string &input)
+//     {
+//         return data[input];
+//     }
 
-    friend std::ostream &operator<<(std::ostream &, const Menu &);
-};
+//     friend std::ostream &operator<<(std::ostream &, const Menu &);
+// };
 
 class BloodStock
 {
@@ -1101,11 +1090,11 @@ std::ostream &operator<<(std::ostream &os, const std::map<size_t, std::string> &
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const Menu &menu)
-{
-    os << menu.data;
-    return os;
-}
+// std::ostream &operator<<(std::ostream &os, const Menu &menu)
+// {
+//     os << menu.data;
+//     return os;
+// }
 
 std::ostream &operator<<(std::ostream &os, const Donors &donors)
 {
