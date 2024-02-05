@@ -18,7 +18,9 @@ set (EXE_TESTS application.cpp
                 Donors.hpp 
                 Donors.cpp
                 Hospital.hpp
-                Hospital.cpp)
+                Hospital.cpp
+                Hospitals.hpp
+                Hospitals.cpp)
 
 add_executable(${PROJECT_1} ${EXE_SOURCE_1})
 add_executable(tests ${EXE_TESTS})
