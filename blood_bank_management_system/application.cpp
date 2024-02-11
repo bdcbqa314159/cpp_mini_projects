@@ -636,6 +636,34 @@ void request_blood()
 
 int main()
 {
+    const std::string logger = "myPassword";
+    std::string input{};
+    int counter = 3;
+
+    while (counter > 0)
+    {
+        std::cout << "Please enter the logger key >> ";
+        getline(std::cin, input);
+
+        if (input == logger)
+        {
+            std::cout << "Thanks and welcome!" << nl;
+            break;
+        }
+        else
+        {
+            std::cout << "Error - wrong logger - please try again - press any key to continue" << nl;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), nl);
+            std::system("clear");
+            counter--;
+        }
+    }
+    if (counter == 0)
+    {
+        std::cout << "Limit reached - disconnection - bye" << nl;
+        return 0;
+    }
+
     Menu menu(choices);
 
     menu_interface(menu);
